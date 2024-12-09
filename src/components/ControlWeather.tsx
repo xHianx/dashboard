@@ -1,26 +1,19 @@
-{/* Hooks */ }
-import { useState, useRef } from 'react';
-
-{/* Componentes MUI */}
-
 import Paper from '@mui/material/Paper';
+import { useState, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
- {/* Interfaz SelectChangeEvent */}
- import Select, { SelectChangeEvent } from '@mui/material/Select';
-
-
+   
 export default function ControlWeather() {
-
     {/* Constante de referencia a un elemento HTML */ }
-     const descriptionRef = useRef<HTMLDivElement>(null);
-    
+    const descriptionRef = useRef<HTMLDivElement>(null);
+
     {/* Variable de estado y función de actualización */}
-     let [selected, setSelected] = useState(-1)
+    let [selected, setSelected] = useState(-1)
 
     {/* Arreglo de objetos */}
     let items = [
@@ -31,10 +24,9 @@ export default function ControlWeather() {
 
     {/* Arreglo de elementos JSX */}
     let options = items.map( (item, key) => <MenuItem key={key} value={key}>{item["name"]}</MenuItem> )
-    
-    
+
     {/* Manejador de eventos */}
-     const handleChange = (event: SelectChangeEvent) => {
+    const handleChange = (event: SelectChangeEvent) => {
 
         let idx = parseInt(event.target.value)
         // alert( idx );
@@ -46,7 +38,7 @@ export default function ControlWeather() {
         }
 
     };
-
+       
     {/* JSX */}
     return (
         <Paper
@@ -81,14 +73,14 @@ export default function ControlWeather() {
 
             </Box>
 
-            {/* Use la variable de estado para renderizar del item seleccionado */}
-            {/*<Typography mt={2} component="p" color="text.secondary">
+            {/* Use la variable de estado para renderizar del item seleccionado
+            <Typography mt={2} component="p" color="text.secondary">
              {
                  (selected >= 0)?items[selected]["description"]:""
              }
-            </Typography>*/}
-
-            <Typography ref={descriptionRef} mt={2} component="p" color="text.secondary" />
+             </Typography> */}
+             
+             <Typography ref={descriptionRef} mt={2} component="p" color="text.secondary" />
 
         </Paper>
 

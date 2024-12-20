@@ -1,77 +1,227 @@
-import './App.css'
-import Grid from '@mui/material/Grid2'
-import IndicatorWeather from './components/IndicatorWeather';
-import TableWeather from './components/TableWeather';
-import ControlWeather from './components/ControlWeather';
-import LineChartWeather from './components/LineChartWeather';
-import { useEffect, useState } from 'react';
-import Item from './interface/item';
+import Grid from "@mui/material/Grid2";
+import "./App.css";
+import ControlWeather from "./components/ControlWeather";
+import TableWeather from "./components/TableWeather";
+import ControLocation from "./components/ControLocation";
+import IndicatorWeather from "./components/IndicatorWeather";
+import LineChartWeather from "./components/LineChartWeather";
+import { useEffect, useState } from "react";
+import Item from "./interface/Item";
+import Header_Weather from "./components/HeaderWeather";
+import LocationMap from "./components/LocationMap";
+import Coordinates from "./interface/Coordinates";
+import GraphInput from "./interface/GraphInput";
+import { useEffect } from 'react';
 
 interface Indicator {
-  title?: String;
-  subtitle?: String;
-  value?: String;
+  title?: string;
+  subtitle?: string;
+  value?: string;
 }
 
 function App() {
+  {
+    /*Coordenadas para Quito, Guayaquil, Salinas*/
+  }
+  
+  const hashCities: { [key: string]: Coordinates } = {
+    Guayaquil: {
+      center: [-2.170998, -79.922359],
+      zoom: 12,
+    },
+    Quito: {
+      center: [-0.180653, -78.467834],
+      zoom: 12,
+    },
+    Salinas: {
+      center: [-2.204514, -80.979979],
+      zoom: 12,
+    },
+  };
+
+  // variables para el gráfico
+  //
+  const [graphValues, setGraphValue] = useState<GraphInput | undefined>(undefined);
+
+
+  {
+    /* Variable de estado y función de actualización */
+  }
+  const [item, setItems] = useState<Item[]>([]);
+
+  const [cords, setCords] = useState<Coordinates>({
+    center: [-2.170998, -79.922359], // Latitud y longitud
+    zoom: 12, // Nivel de zoom
+  });
+  
+
   const [indicators, setIndicators] = useState<Indicator[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
 
-  useEffect(() => {
-    const request = async () => {
-      let API_KEY = "3f3a46be5b39afdf7737f3cc150923cb";
-      let response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=Guayaquil&mode=xml&appid=${API_KEY}`);
-      let savedTextXML = await response.text();
+  const [value, setvalue] = useState("Guayaquil");
 
-      // XML Parser
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(savedTextXML, "application/xml");
+  const [weather, setWeather] = useState("Temperatura");
 
-      let dataToIndicators: Indicator[] = [];
+  // Llenar gráfico
+  const filter_data = (meteorology: string, data: Document): GraphInput => {
+    let dictionary: Map<string, number[]> = new Map();
+    if (data) {
+      const forecastData = data.getElementsByTagName("time");
 
-      let name = xml.getElementsByTagName("name")[0].innerHTML || "";
-      dataToIndicators.push({ "title": "Location", "subtitle": "City", "value": name });
+      for (let i = 0; i < forecastData.length; i++) {
+        const timeNode = forecastData[i];
+        const day = timeNode.getAttribute("from")?.split("T")[0];
 
-      let location = xml.getElementsByTagName("location")[1];
+        if (day) {
+          let value = 0;
 
-      let latitude = location.getAttribute("latitude") || "";
-      dataToIndicators.push({ "title": "Location", "subtitle": "Latitude", "value": latitude });
+          switch (weather) {
+            case "Temperatura":
+              value = parseFloat(
+                timeNode
+                  .getElementsByTagName("temperature")[0]
+                  ?.getAttribute("value") || "0"
+              );
+              break;
 
-      let longitude = location.getAttribute("longitude") || "";
-      dataToIndicators.push({ "title": "Location", "subtitle": "Longitude", "value": longitude });
+            case "Presión":
+              value = parseFloat(
+                timeNode
+                  .getElementsByTagName("pressure")[0]
+                  ?.getAttribute("value") || "0"
+              );
+              break;
 
-      let altitude = location.getAttribute("altitude") || "";
-      dataToIndicators.push({ "title": "Location", "subtitle": "Altitude", "value": altitude });
+            case "Humedad":
+              value = parseFloat(
+                timeNode
+                  .getElementsByTagName("humidity")[0]
+                  ?.getAttribute("value") || "0"
+              );
+              break;
 
-      console.log(dataToIndicators);
-      setIndicators(dataToIndicators);
-
-      // Análisis del XML y almacenamiento de los primeros 6 objetos
-      const times = xml.getElementsByTagName("time");
-      let dataToItems: Item[] = [];
-      for (let i = 0; i < times.length && dataToItems.length < 6; i++) {
-        const time = times[i];
-        const dateStart = time.getAttribute("from") || "";
-        const dateEnd = time.getAttribute("to") || "";
-        const precipitation = time.getElementsByTagName("precipitation")[0].getAttribute("probability") || "";
-        const humidity = time.getElementsByTagName("humidity")[0].getAttribute("value") || "";
-        const clouds = time.getElementsByTagName("clouds")[0].getAttribute("value") || "";
-
-        dataToItems.push({
-          dateStart,
-          dateEnd,
-          precipitation,
-          humidity,
-          clouds,
-        });
+            default:
+              throw new Error(
+                `Tipo de meteorología '${meteorology}}' no soportado.`
+              );
+          }
+          if (dictionary.has(day)) {
+            dictionary.get(day)?.push(value);
+          } else {
+            dictionary.set(day, [value]);
+          }
+        }
       }
-      setItems(dataToItems);
+    }
+
+    const axis_x: string[] = [];
+    const axis_y: number[] = [];
+
+    dictionary.forEach((values, key) => {
+      const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+      axis_x.push(key);
+      axis_y.push(average);
+    });
+
+    const output: GraphInput = {
+      axis_X: axis_x,
+      axis_Y: axis_y,
     };
 
-    request();
-  }, []); // Asegúrate de que el segundo argumento del useEffect sea un arreglo vacío para que se ejecute una sola vez
+    return output;
+  };
 
-  const renderIndicators = () => {
+  const mapCity = (selectedCity: string): void => {
+    if (hashCities[selectedCity]) {
+      setCords({
+        center: hashCities[selectedCity].center,
+        zoom: hashCities[selectedCity].zoom,
+      });
+    }
+  };
+
+  const fetchWeatherData = async (
+    selectedCity: string,
+    selectedMeteorology: string
+  ) => {
+    try {
+      const API_KEY = "27a2bc97a7f2f553eb69e2ad906a8f2f";
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${selectedCity}&mode=xml&appid=${API_KEY}`
+      );
+
+      const xmlData = await response.text();
+
+      console.log(xmlData);
+
+      // Parsear el XML
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlData, "application/xml");
+
+      const timeElement = xml.getElementsByTagName("time")[0]; // Primer intervalo de tiempo
+      const temperature =
+        timeElement
+          ?.getElementsByTagName("temperature")[0]
+          ?.getAttribute("value") || "N/A";
+      const wind =
+        timeElement
+          ?.getElementsByTagName("windSpeed")[0]
+          ?.getAttribute("mps") || "N/A";
+      const humidity =
+        timeElement
+          ?.getElementsByTagName("humidity")[0]
+          ?.getAttribute("value") || "N/A";
+
+      // Actualizar indicadores
+      const dataToIndicators: Indicator[] = [
+        { title: "Location", subtitle: "City", value: selectedCity },
+        { title: "Temperature", subtitle: "Kelvin", value: temperature },
+        { title: "Wind", subtitle: "m/s", value: wind },
+        { title: "Humidity", subtitle: "%", value: humidity },
+      ];
+      setIndicators(dataToIndicators);
+
+      /* indexamos el time */
+      let forecast: Item[] = [];
+      let list_forecast = Array.from(xml.getElementsByTagName("time"));
+      console.log(list_forecast);
+      forecast = list_forecast.slice(0, 5).map((timeStamp) => {
+        return {
+          dateStart: timeStamp.getAttribute("from")?.split("T")[1] || "",
+          dateEnd: timeStamp.getAttribute("to")?.split("T")[1] || "",
+          precipitation:
+            timeStamp
+              .getElementsByTagName("precipitation")[0]
+              ?.getAttribute("probability") || " ",
+          humidity:
+            timeStamp
+              .getElementsByTagName("humidity")[0]
+              ?.getAttribute("value") || " ",
+          cloud:
+            timeStamp
+              .getElementsByTagName("clouds")[0]
+              ?.getAttribute("value") || " ",
+        };
+      });
+
+      setGraphValue(filter_data(selectedMeteorology, xml));
+      setItems(forecast);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      console.log("d");
+    }
+  };
+  useEffect(() => {
+    fetchWeatherData(value, weather);
+    console.log(value);
+    console.log(graphValues);
+    mapCity(value);
+  }, [value, weather]);
+  useEffect(() => {
+    document.body.style.zoom = '80%';
+  }, []);
+
+  let renderIndicators = () => {
     return indicators.map((indicator, idx) => (
       <Grid key={idx} size={{ xs: 12, xl: 3 }}>
         <IndicatorWeather
@@ -82,28 +232,50 @@ function App() {
       </Grid>
     ));
   };
-
   return (
-    <Grid container spacing={5}>
-      {renderIndicators()}
-      <Grid size={{ xs: 12, xl: 8 }}></Grid>
-
-      {/* Grid Anidado */}
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, xl: 3 }}>
-          <ControlWeather />
+    <div className="background">
+      <Grid container spacing={5}>
+        {/* Primer encabezado  */}
+        <Grid size={{ xs: 6, xl: 12 }}>
+          <Header_Weather target={value} setTarget={setvalue} />
         </Grid>
-        <Grid size={{ xs: 12, xl: 9 }}>
-          <TableWeather itemsIn={items} />
+        {renderIndicators()}
+        {/* Tabla */}
+
+        <Grid size={{ xs: 12, xl: 6 }}>
+          <Grid container spacing={1}>
+            <Grid size={{ xs: 12, xl: 3 }} container spacing={5}>
+              <ControLocation target={value} setTarget={setvalue} />
+            </Grid>
+            <Grid size={{ xs: 12, xl: 9 }}>
+              <TableWeather itemsIn={item} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* Gráfico */}
+        <Grid size={{ xs: 12, xl: 6 }} className="de">
+          <LocationMap center={cords.center} zoom={cords.zoom}></LocationMap>
+        </Grid>
+
+        <Grid size={{ xs: 12, xl: 5 }}>
+          <ControlWeather target={weather} setTarget={setWeather} />
+          {!graphValues ||
+          !graphValues.axis_X ||
+          !graphValues.axis_Y ||
+          graphValues.axis_X.length === 0 ||
+          graphValues.axis_Y.length === 0 ? (
+            <p>No hay datos disponibles para el gráfico.</p>
+          ) : (
+            <LineChartWeather arg1={graphValues} tag={"Selected Data"} />
+          )}
+          {/*<LineChartWeather /> */}
         </Grid>
       </Grid>
-
-      {/* Gráfico */}
-      <Grid size={{ xs: 12, xl: 4 }}>
-        <LineChartWeather />
-      </Grid>
-    </Grid>
+    </div>
   );
 }
+
+
 
 export default App;

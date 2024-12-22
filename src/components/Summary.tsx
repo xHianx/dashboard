@@ -47,7 +47,20 @@ export default function Summary() {
   }, []);
 
   return (
-    <Card sx={{ maxWidth: '345px', backgroundColor: 'white', borderRadius: '7px' }} elevation={5}>
+    <Card
+      sx={{
+        maxWidth: 340,
+        backgroundColor: "#F1FAEE", /* Fondo claro */
+        borderRadius: "12px",
+        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)", /* Sombra suave */
+        transition: "transform 0.3s ease-in-out, box-shadow 0.3s",
+        "&:hover": {
+          transform: "translateY(-5px)",
+          boxShadow: "0 12px 24px rgba(0, 0, 0, 0.2)", /* Mayor sombra */
+        },
+      }}
+      elevation={4}
+    >
       <CardActionArea>
         <CardMedia
           component="img"

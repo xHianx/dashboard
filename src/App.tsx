@@ -20,141 +20,130 @@ function App() {
   let [dataGraphic, setDataGraphic] = useState([])
   let [tunnel, setTunnel] = useState([])
   let [ciudad, setCiudad] = useState('Guayaquil') 
-
+  let ciudadesDisponibles = ['Guayaquil', 'Salinas', 'Quito'];
 
   {/* Hook: useEffect */ }
 
   {/* Función para el efecto secundario a ejecutar y Arreglo de dependencias */ }
 
   useEffect(() => {
-
     (async () => {
-
-      // {/* Request */ }
-
-      // let API_KEY = "36f32d81d506e434b4d202f2d33bf699"
-      // let response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=Guayaquil&mode=xml&appid=${API_KEY}`)
-      // let savedTextXML = await response.text();
-
-      {/* LocalStorage */ }
-
-      let savedTextXML = localStorage.getItem("openWeatherMap")
-      let expiringTime = localStorage.getItem("expiringTime")
-
-      let nowTime = (new Date()).getTime();
-
-      {/* 4. Realiza la petición asicrónica cuando: 
-          (1) La estampa de tiempo de expiración (expiringTime) es nula, o  
-          (2) La estampa de tiempo actual es mayor al tiempo de expiración 
-      */}
-
-      if (expiringTime === null || nowTime > parseInt(expiringTime) || ciudad !== localStorage.getItem('ciudad')) {
-
-        {/* 5. Request */ }
-
-        let API_KEY = "36f32d81d506e434b4d202f2d33bf699"
-        let response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${ciudad}&mode=xml&appid=${API_KEY}`)
-        if (response.ok) {
+      try {
+        // Recuperar datos del almacenamiento local
+        let savedTextXML = localStorage.getItem("openWeatherMap");
+        let expiringTime = localStorage.getItem("expiringTime");
+        let nowTime = new Date().getTime();
+  
+        // Verificar si se necesita realizar una nueva solicitud a la API
+        const needsUpdate =
+          !expiringTime ||
+          nowTime > parseInt(expiringTime) ||
+          ciudad !== localStorage.getItem("ciudad");
+  
+        if (needsUpdate) {
+          const API_KEY = "2910ee09df49a916cd34d94ffa58f9f4";
+          const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/forecast?q=${ciudad}&mode=xml&appid=${API_KEY}`
+          );
+  
+          if (!response.ok) {
+            console.error("Error al obtener datos de la API", response.status);
+            return;
+          }
+  
           savedTextXML = await response.text();
+  
+          // Guardar datos en el almacenamiento local con una hora de expiración
+          const delay = 3600000; // 1 hora
+          localStorage.setItem("openWeatherMap", savedTextXML);
+          localStorage.setItem("expiringTime", (nowTime + delay).toString());
+          localStorage.setItem("ciudad", ciudad);
         }
-
-
-        {/* 6. Diferencia de tiempo */ }
-
-        let hours = 1
-        let delay = hours * 3600000
-
-
-        {/* 7. En el LocalStorage, almacena texto en la clave openWeatherMap y la estampa de tiempo de expiración */ }
-
-        localStorage.setItem("openWeatherMap", savedTextXML)
-        localStorage.setItem("expiringTime", (nowTime + delay).toString())
-        localStorage.setItem('ciudad', ciudad)
+  
+        // Analizar XML y actualizar los estados
+        if (savedTextXML) {
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(savedTextXML, "application/xml");
+  
+          // Extraer datos de indicadores
+          const dataToIndicators = [];
+          const location = xml.getElementsByTagName("location")[1];
+          const name = xml.getElementsByTagName("name")[0]?.innerHTML || "N/A";
+          const altitude = location?.getAttribute("altitude") || "N/A";
+          const latitude = location?.getAttribute("latitude") || "N/A";
+          const longitude = location?.getAttribute("longitude") || "N/A";
+  
+          dataToIndicators.push(["Ciudad", "Ciudad", name]);
+          dataToIndicators.push(["Altitud", "Altitud", altitude]);
+          dataToIndicators.push(["Latitud", "Latitud", latitude]);
+          dataToIndicators.push(["Longitud", "Longitud", longitude]);
+  
+          setIndicators(
+            dataToIndicators.map((element) => (
+              <Indicator
+                key={element[0]}
+                title={element[0]}
+                subtitle={element[1]}
+                value={element[2]}
+              />
+            ))
+          );
+  
+          // Extraer datos para la tabla y el gráfico
+          const arrayObjects = Array.from(
+            xml.getElementsByTagName("time")
+          ).map((timeElement) => ({
+            rangeHours:
+              timeElement.getAttribute("from").split("T")[1] +
+              " - " +
+              timeElement.getAttribute("to").split("T")[1],
+            windDirection:
+              timeElement
+                .getElementsByTagName("windDirection")[0]
+                .getAttribute("deg") +
+              " " +
+              timeElement
+                .getElementsByTagName("windDirection")[0]
+                .getAttribute("code"),
+            precipitation:
+              timeElement
+                .getElementsByTagName("precipitation")[0]
+                .getAttribute("probability") || "0%",
+            humidity:
+              timeElement
+                .getElementsByTagName("humidity")[0]
+                .getAttribute("value") +
+              " " +
+              timeElement
+                .getElementsByTagName("humidity")[0]
+                .getAttribute("unit"),
+            clouds:
+              timeElement
+                .getElementsByTagName("clouds")[0]
+                .getAttribute("value") +
+              ": " +
+              timeElement
+                .getElementsByTagName("clouds")[0]
+                .getAttribute("all") +
+              " " +
+              timeElement
+                .getElementsByTagName("clouds")[0]
+                .getAttribute("unit"),
+          }));
+  
+          setDataGraphic(arrayObjects);
+          setRowsTable(arrayObjects.slice(0, 8)); // Muestra solo 8 filas
+        }
+      } catch (error) {
+        console.error("Error al procesar datos de la API:", error);
       }
-
-      {/* XML Parser */ }
-
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(savedTextXML, "application/xml");
-
-      {/* Arreglo para agregar los resultados */ }
-
-      let dataToIndicators = new Array()
-
-      {/* 
-        Análisis, extracción y almacenamiento del contenido del XML 
-        en el arreglo de resultados
-      */}
-
-      let location = xml.getElementsByTagName("location")[1]
-
-      let name = xml.getElementsByTagName("name")[0]
-      dataToIndicators.push(["Ciudad", "Ciudad", name.innerHTML])
-
-      let altitude = location.getAttribute("altitude")
-      dataToIndicators.push(["Altitud", "Altitud", altitude])
-
-      let latitude = location.getAttribute("latitude")
-      dataToIndicators.push(["Latitud", "Latitud", latitude])
-
-      let longitude = location.getAttribute("longitude")
-      dataToIndicators.push(["Longitud", "Longitud", longitude])
-
-      // console.log(dataToIndicators)
-
-
-      {/* Renderice el arreglo de resultados en un arreglo de elementos Indicator */ }
-
-      let indicatorsElements = Array.from(dataToIndicators).map(
-        (element) => <Indicator title={element[0]} subtitle={element[1]} value={element[2]} />
-      )
-
-      {/* Modificación de la variable de estado mediante la función de actualización */ }
-
-      setIndicators(indicatorsElements)
-
-      {/* 
-        2. Procese los resultados de acuerdo con el diseño anterior.
-        Revise la estructura del documento XML para extraer los datos necesarios. 
-      */}
-
-      let arrayObjects = Array.from(xml.getElementsByTagName("time")).map((timeElement) => {
-
-        let rangeHours = timeElement.getAttribute("from").split("T")[1] + " - " + timeElement.getAttribute("to").split("T")[1]
-
-        let windDirection = timeElement.getElementsByTagName("windDirection")[0].getAttribute("deg") + " " + timeElement.getElementsByTagName("windDirection")[0].getAttribute("code")
-
-        let precipitation = timeElement.getElementsByTagName("precipitation")[0].getAttribute("probability")
-
-        let humidity = timeElement.getElementsByTagName("humidity")[0].getAttribute("value") + " " + timeElement.getElementsByTagName("humidity")[0].getAttribute("unit")
-
-        let clouds = timeElement.getElementsByTagName("clouds")[0].getAttribute("value") + ": " + timeElement.getElementsByTagName("clouds")[0].getAttribute("all") + " " + timeElement.getElementsByTagName("clouds")[0].getAttribute("unit")
-
-        return {
-          "rangeHours": rangeHours,
-          "windDirection": windDirection,
-          "precipitation": precipitation,
-          "humidity": humidity,
-          "clouds": clouds
-        }
-
-      })
-
-
-      // arrayObjects = arrayObjects.slice(0, 20)
-      setDataGraphic(arrayObjects)
-
-      arrayObjects = arrayObjects.slice(0, 8)
-      {/* 3. Actualice de la variable de estado mediante la función de actualización */ }
-      setRowsTable(arrayObjects)
-
-    })()
-
-  }, [ciudad])
-
+    })();
+  }, [ciudad]);
+  
   return (
     <>
-      <Grid container sx={{ width: '100%' }}>
+      <Grid container 
+      sx={{ width: '100%' }}>
 
         <Grid sm={12} md={12} lg={12} sx={{ padding: 0, margin: 0, width: '100%', position: 'fixed', zIndex: 2 }}>
           <Navbar />
@@ -163,10 +152,10 @@ function App() {
         <Grid container sm={12} md={12} lg={12} id="summary" sx={{ width: '100%', marginTop: 7, paddingY: 7, alignItems: 'center', justifyContent: 'center', backgroundColor: '#123f77' }}>
 
           <Grid sm={8} md={9} lg={9} xl={9} sx={{ textAlign: 'left', marginY: 3, padding: 3, color: 'white' }}>
-            <h3 id='inicio-title'>{ciudad}, Ecuador</h3>
-            <p id='inicio-text'>
-              Aquí encontrarás la información más actualizada sobre el clima de nuestra ciudad, incluyendo temperaturas, condiciones meteorológicas y pronósticos. ¡Mantente informado y planifica tu día con confianza!
-            </p>
+          <h3 id='inicio-title'>{ciudad}, Ecuador</h3>
+          <p id='inicio-text'>
+            Aquí encontrarás la información más actualizada sobre el clima de {ciudad}, incluyendo temperaturas, condiciones meteorológicas y pronósticos. ¡Mantente informado y planifica tu día con confianza!
+          </p>
             <InputText setValue={setCiudad}></InputText>
           </Grid>
 

@@ -15,10 +15,11 @@ export default function Navbar() {
     <header>
       <div>
         <img id="logo" src={logo} alt="logo" />
-        <h3 id="logo-title">Guayaquil Forecast</h3>
+        <h3 id="logo-title">Dashboard Ecuador</h3>
       </div>
       <nav ref={navRef}>
         <a href="#" onClick={showNavBar}>Inicio</a>
+        <a href="#map" onClick={showNavBar}>Mapa</a>
         <a href="#indicators" onClick={showNavBar}>Detalles</a>
         <a href="#table" onClick={showNavBar}>Historial</a>
         <a href="#graphic" onClick={showNavBar}>Gráfico</a>

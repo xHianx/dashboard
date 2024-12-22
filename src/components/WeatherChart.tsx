@@ -80,13 +80,21 @@ export default function WeatherChart({ value, dataGraphic }) {
   return (
     <Paper
       sx={{
-        // p: 1,
-        pb: 3,
+        p: 3,
+        pb: 4,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center', /* Centrar gráfico */
+        backgroundColor: '#f7fafc',
+        borderRadius: '15px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+        transition: 'all 0.3s ease-in-out',
+        '&:hover': {
+          transform: 'scale(1.03)',
+        }
       }}
       elevation={5}
-      >
+    >
       <Chart
         chartType="LineChart"
         data={data}

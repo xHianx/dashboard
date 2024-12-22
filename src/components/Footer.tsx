@@ -4,20 +4,19 @@ import '../styles/fonts.css'
 
 const Footer: React.FC = () => {
   return (
-    <Box id="footer" sx={{ backgroundColor: '#212121', color: '#eee', py: 4 }}>
-
-          <Typography 
-          variant="body2" 
-          sx={{ 
-            fontFamily: 'Titillium Web, sans-serif', 
-            fontSize: '1.1rem',
-            '&:hover': { color: '#fece00' },
-            transition: 'all 300ms'
-          }}
-          >
-            Guayaquil ForeCast© {new Date().getFullYear()} Julio Guerrero. Todos los derechos reservados.
-          </Typography>
-
+    <Box 
+      id="footer" 
+      sx={{ 
+        background: 'linear-gradient(to right, #2b6cb0, #2c5282)', 
+        color: '#fff', 
+        py: 3,
+        textAlign: 'center',
+        fontSize: '1.1rem',
+        fontWeight: 'bold',
+      }}
+    >
+      Dashboard Ecuador© {new Date().getFullYear()} Cristhian Barragan. <br /> 
+      Todos los derechos reservados.
     </Box>
   );
 };

@@ -95,3 +95,51 @@ nav {
 		font-size: 1.5rem;
 	}
 }
+
+header {
+	background-color: #1D3557; /* Azul oscuro */
+	padding: 0 2rem;
+	border-bottom: 4px solid #457B9D; /* Línea divisoria */
+  }
+  
+  nav a {
+	font-size: 1.2rem;
+	margin: 0 1.2rem;
+	text-decoration: none;
+	padding: 0.6rem 1.2rem;
+	border-radius: 5px; /* Bordes redondeados */
+	background-color: #457B9D; /* Azul medio */
+	color: #F1FAEE; /* Texto blanco */
+	transition: all 300ms ease-in-out;
+  }
+  
+  nav a:hover {
+	background-color: #E63946; /* Resaltado rojo coral */
+	color: #F1FAEE;
+  }
+  
+  header {
+	background: linear-gradient(to right, #457B9D, #1D3557); /* Degradado */
+	padding: 1rem 2rem;
+	border-bottom: 4px solid #F1FAEE;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+  }
+  
+  nav a {
+	font-size: 1rem;
+	color: #F1FAEE;
+	text-decoration: none;
+	margin: 0 1rem;
+	padding: 0.5rem 1rem;
+	border-radius: 8px;
+	transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  nav a:hover {
+	background-color: #F1FAEE;
+	color: #1D3557;
+	transform: scale(1.1);
+  }
+  

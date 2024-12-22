@@ -7,16 +7,24 @@ export default function Indicator(config: Config) {
   return (
     <Paper
       sx={{
-        px: 2,
+        px: 4,
         py: 5,
-        m: 2,
+        m: 3,
         display: "flex",
         flexDirection: "column",
-        backgroundColor: 'white',
-        borderRadius: '10px'
+        alignItems: "center", /* Centrar contenido */
+        backgroundColor: '#fefefe',
+        borderRadius: '15px',
+        boxShadow: '0 8px 15px rgba(0, 0, 0, 0.1)', /* Más sombra */
+        transition: 'transform 0.3s, box-shadow 0.3s',
+        '&:hover': { /* Interactividad */
+          transform: 'scale(1.05)',
+          boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
+        }
       }}
-      elevation={5}
+      elevation={3}
     >
+
       <Typography component="h2" variant="h6" sx={{ color: '#123f77' }} gutterBottom>
         {config.title}
       </Typography>

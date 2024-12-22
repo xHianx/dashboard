@@ -1,11 +1,22 @@
 #root {
-  background-color: #eeeeee;
+  background-color: #f5f7fa; /* Cambiado a un gris claro */
   width: 100%;
   margin: 0 auto;
   padding: 0;
   text-align: center;
   box-sizing: border-box;
+  font-family: "Titillium Web", sans-serif; /* Reforzar el uso de la fuente */
 }
+
+#root {
+  background-color: #F1FAEE; /* Blanco suave */
+  color: #1D3557; /* Texto en azul oscuro */
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: "Titillium Web", sans-serif; /* Fuente moderna */
+}
+
 
 html {
   scroll-behavior: smooth;
@@ -16,11 +27,13 @@ div[id] {
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 2.2rem; /* Aumentar ligeramente el tamaño */
+  font-weight: bold; /* Destacar títulos */
 }
 
 .section-text {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  color: #555; /* Un color más sutil para texto */
 }
 
 #title {
@@ -32,8 +45,11 @@ div[id] {
   padding: 1.5rem 0;
 }
 
-#inicio-title {
-  font-size: 4rem;
+@media (max-width: 900px) {
+  #inicio-title {
+    font-size: 2.2rem;
+    text-align: left; /* Cambiar alineación en pantallas pequeñas */
+  }
 }
 
 #inicio-text {
@@ -76,46 +92,18 @@ div[id] {
     margin: 1rem 1rem;
   }
 }
-
-/* #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+#city-select {
+  background-color: #e0e0e0; /* Fondo gris claro */
+  color: #1D3557; /* Texto azul oscuro */
+  border: 1px solid #457B9D; /* Borde azul medio */
+  border-radius: 4px;
+  padding: 0.5rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+#city-select:hover {
+  background-color: #d6d6d6; /* Fondo más claro al pasar el mouse */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#city-select:focus {
+  border-color: #0d045a; /* Borde rojo coral al enfocar */
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-} */

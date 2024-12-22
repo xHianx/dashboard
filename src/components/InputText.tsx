@@ -1,39 +1,41 @@
 import { useState } from 'react';
 import { Button, Input, Typography } from '@mui/material';
 
-function InputText({ setValue }) {
-  const [inputValue, setInputValue] = useState('');
-  const [savedValue, setSavedValue] = useState('');
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-  const handleButtonClick = () => {
-    if (inputValue !== null) {
-      let ciudad = inputValue.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-      setSavedValue(ciudad);
-      setValue(ciudad)
-    } else {
-      setSavedValue('Guayaquil');
-      setValue('Guayaquil')
-    }
-  };
+interface InputTextProps {
+  setValue: (value: string) => void;
+}
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
+function InputText({ setValue }: InputTextProps) {
   return (
-    <>
-      <Input
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        placeholder="Ingresa una ciudad"
-        style={{ marginRight: '10px', marginTop: '30px', color: 'white', width: '80%' }}
-      />
-      <Button variant="contained" color="primary" onClick={handleButtonClick}>
-        Cambiar
-      </Button>
-    </>
+    <FormControl fullWidth>
+      <InputLabel id="city-select-label">Selecciona una ciudad</InputLabel>
+      <Select
+        labelId="city-select-label"
+        id="city-select"
+        defaultValue="Guayaquil"
+        onChange={(event) => setValue(event.target.value)}
+        sx={{
+          backgroundColor: "#e0e0e0", // Gris claro
+          color: "#1D3557", // Texto azul oscuro
+          "&:hover": {
+            backgroundColor: "#d6d6d6", // Gris más claro al pasar el mouse
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#1D3557", // Color del borde
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#1D3557", // Color del borde al enfocar
+          },
+        }}
+      >
+        <MenuItem value="Guayaquil">Guayaquil</MenuItem>
+        <MenuItem value="Salinas">Salinas</MenuItem>
+        <MenuItem value="Quito">Quito</MenuItem>
+      </Select>
+    </FormControl>
   );
 }
 
-export default InputText
+export default InputText;

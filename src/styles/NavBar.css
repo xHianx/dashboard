@@ -1,0 +1,97 @@
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	--mainColor: #123f77;
+	--secondaryColor: #fece00;
+	--textColor: #eee;
+}
+
+#logo {
+	height: 72px;
+	margin-right: 15px;
+}
+
+#logo-title {
+	font-size: 1.5rem;
+}
+
+header {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 80px;
+	padding: 0 2rem;
+	background-color: var(--mainColor);
+	color: var(--textColor);
+}
+
+nav a {
+	font-size: 1.1rem;
+	margin: 0 1rem;
+	text-decoration: none;
+	color: var(--textColor);
+	transition: all 300ms;
+}
+
+nav a:hover {
+	color: var(--secondaryColor);
+}
+
+header .nav-btn {
+	padding: 5px;
+	cursor: pointer;
+	background: transparent;
+	border: none;
+	outline: none;
+	color: var(--textColor);
+    display: none;
+	font-size: 1.8rem;
+}
+
+header div,
+nav {
+	display: flex;
+	align-items: center;
+    justify-content: right;
+    z-index: 1;
+}
+
+@media only screen and (max-width: 1024px) {
+	header .nav-btn {
+		display: block;
+	}
+
+	header nav {
+		position: fixed;
+		top: -100vh;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1.5rem;
+		background-color: var(--mainColor);
+		transition: 1s;
+	}
+
+	header .responsive_nav {
+		transform: translateY(100vh);
+	}
+
+	nav .nav-close-btn {
+		position: absolute;
+		top: 2rem;
+		right: 2rem;
+	}
+
+	nav a {
+		font-size: 1.5rem;
+	}
+}

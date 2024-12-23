@@ -1,3 +1,5 @@
+@import url("https://unpkg.com/leaflet@1.9.3/dist/leaflet.css");
+
 #root {
   background-color: #f5f7fa; /* Cambiado a un gris claro */
   width: 100%;
@@ -106,4 +108,21 @@ div[id] {
 
 #city-select:focus {
   border-color: #0d045a; /* Borde rojo coral al enfocar */
+}
+
+#map {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1D3557;
+}
+
+.section-text {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1rem;
 }

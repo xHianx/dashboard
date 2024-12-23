@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import InputText from './components/InputText'
+import LocationMap from "./components/LocationMap"; // Importa el nuevo componente
 
 function App() {
 
@@ -185,6 +186,17 @@ function App() {
           </Grid>
           <Grid xs={12} sm={6} md={3} lg={3} sx={{ flexGrow: 1 }}>
             {indicators[3]}
+          </Grid>
+
+          {/* Mapa debajo de los indicadores */}
+          <Grid container xs={12} md={12} lg={12} id="map" sx={{ margin: 5 }}>
+            <Grid xs={12} sm={12} md={12} lg={12}>
+              <h2 className="section-title">Mapa de la Ciudad</h2>
+              <p className="section-text">
+                Este mapa muestra la ubicación específica de la ciudad seleccionada en el Ecuador.
+              </p>
+              <LocationMap city={ciudad} />
+            </Grid>
           </Grid>
 
         </Grid>

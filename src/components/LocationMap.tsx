@@ -27,7 +27,7 @@ export default function LocationMap({ city }: LocationMapProps) {
 
   return (
     <MapContainer
-      center={[center.lat, center.lng] as [number, number]}
+      center={[center.lat, center.lng] as [number, number]} // Aseguramos el tipo
       zoom={13}
       style={{
         height: "400px",
@@ -39,13 +39,14 @@ export default function LocationMap({ city }: LocationMapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
       />
+
       <Marker position={[center.lat, center.lng] as [number, number]} icon={icon as L.Icon}>
-        <Popup>
-          <strong>{city}</strong>
-          <br />
-          Coordenadas: {center.lat}, {center.lng}
-        </Popup>
-      </Marker>
+          <Popup>
+            <strong>{city}</strong>
+            <br />
+            Coordenadas: {center.lat}, {center.lng}
+          </Popup>
+        </Marker>
     </MapContainer>
   );
 }

@@ -1,5 +1,5 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 
 const icon = new L.Icon({
@@ -22,12 +22,23 @@ const cityCoordinates = {
   Quito: { lat: -0.1807, lng: -78.4678 },
 };
 
+function MapUpdater({ city }: { city: string }) {
+  const map = useMap();
+  const center = cityCoordinates[city] || cityCoordinates.Guayaquil;
+
+  useEffect(() => {
+    map.setView([center.lat, center.lng], 13); // Actualiza la vista del mapa
+  }, [city, map]);
+
+  return null; // Este componente solo se usa para actualizar el mapa
+}
+
 export default function LocationMap({ city }: LocationMapProps) {
   const center = cityCoordinates[city] || cityCoordinates.Guayaquil;
 
   return (
     <MapContainer
-      center={[center.lat, center.lng] as [number, number]} // Aseguramos el tipo
+      center={[center.lat, center.lng]}
       zoom={13}
       style={{
         height: "400px",
@@ -39,14 +50,14 @@ export default function LocationMap({ city }: LocationMapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
       />
-
-      <Marker position={[center.lat, center.lng] as [number, number]} icon={icon as L.Icon}>
-          <Popup>
-            <strong>{city}</strong>
-            <br />
-            Coordenadas: {center.lat}, {center.lng}
-          </Popup>
-        </Marker>
+      <MapUpdater city={city} /> {/* Este componente actualiza la vista */}
+      <Marker position={[center.lat, center.lng]} icon={icon}>
+        <Popup>
+          <strong>{city}</strong>
+          <br />
+          Coordenadas: {center.lat}, {center.lng}
+        </Popup>
+      </Marker>
     </MapContainer>
   );
 }

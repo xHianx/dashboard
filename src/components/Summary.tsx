@@ -4,15 +4,15 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 
-import sunrise from '../assets/sunrise.jpeg'
+/*import sunrise from '../assets/sunrise.jpeg'
 import afternoon from '../assets/afternoon.jpeg'
-import evening from '../assets/evening.jpg'
+import evening from '../assets/evening.jpg'*/
 import { useEffect, useState } from 'react';
 
 export default function Summary() {
 
   const [dateInfo, setDateInfo] = useState({ date: '', time: '', wish: '' });
-  const [image, setImage] = useState(sunrise)
+  /*const [image, setImage] = useState(sunrise)*/
 
   useEffect(() => {
     const locale = 'es';
@@ -29,13 +29,13 @@ export default function Summary() {
 
       setDateInfo({ date, time, wish });
 
-      if (hour < 12) {
+      /*if (hour < 12) {
         setImage(sunrise) 
       } else if (hour < 17) {
         setImage(afternoon)
       } else {
         setImage(evening)
-      }
+      }*/
 
 
     };
@@ -63,10 +63,10 @@ export default function Summary() {
     >
       <CardActionArea>
         <CardMedia
-          component="img"
+          /*component="img"
           height="140"
           image={image}
-          alt="Amanecer"
+          alt="Amanecer"*/
         />
         <CardContent>
           <Typography gutterBottom component="h2" variant="h6" sx={{ fontWeight: 200, color: '#123f77' }}>

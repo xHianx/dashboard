@@ -44,6 +44,8 @@ export default function LocationMap({ city }: LocationMapProps) {
         height: "400px",
         width: "100%",
         borderRadius: "10px",
+        position: "relative", // Se mantiene dentro del flujo del diseño
+        zIndex: 0, // Asegura que no sobrepase otros elementos
       }}
     >
       <TileLayer

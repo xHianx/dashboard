@@ -190,7 +190,11 @@ function App() {
 
           {/* Mapa debajo de los indicadores */}
           <Grid container xs={12} md={12} lg={12} id="map" sx={{ margin: 5 }}>
-            <Grid xs={12} sm={12} md={12} lg={12}>
+            <Grid xs={12} sm={12} md={12} lg={12} sx={{
+                position: "relative", // Mantiene el contenedor en el flujo
+                zIndex: 0, // Evita superposición sobre otros elementos
+                overflow: "hidden", // Asegura que no haya contenido flotante
+                }}>
               <h2 className="section-title">Mapa de la Ciudad</h2>
               <p className="section-text">
                 Este mapa muestra la ubicación específica de la ciudad seleccionada en el Ecuador.
